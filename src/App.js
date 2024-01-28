@@ -1,7 +1,14 @@
-import { Alchemy, Network } from 'alchemy-sdk';
-import { useEffect, useState } from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom/cjs/react-router-dom";
+import Homepage from "./Homepage";
+import {Alchemy, Network} from "alchemy-sdk";
 
-import './App.css';
+import "./App.css";
+import BlockDetails from "./BlockDetails";
+import BlockTxList from "./BlockTxList";
 
 // Refer to the README doc for more information about using API
 // keys in client-side code. You should never do this in production
@@ -11,26 +18,29 @@ const settings = {
   network: Network.ETH_MAINNET,
 };
 
-
-// In this week's lessons we used ethers.js. Here we are using the
-// Alchemy SDK is an umbrella library with several different packages.
-//
-// You can read more about the packages here:
-//   https://docs.alchemy.com/reference/alchemy-sdk-api-surface-overview#api-surface
 const alchemy = new Alchemy(settings);
 
 function App() {
-  const [blockNumber, setBlockNumber] = useState();
-
-  useEffect(() => {
-    async function getBlockNumber() {
-      setBlockNumber(await alchemy.core.getBlockNumber());
-    }
-
-    getBlockNumber();
-  });
-
-  return <div className="App">Block Number: {blockNumber}</div>;
+  return (
+    <Router>
+      <div className="App">
+        <h1>Ethereum Block Explorer</h1>
+        <div className="content">
+          <Switch>
+            <Route exact path="/">
+              <Homepage alchemy={alchemy} />
+            </Route>
+            <Route path="/block/:blockNumber">
+              <BlockDetails alchemy={alchemy} />
+            </Route>
+            <Route path="/transactions/:blockNumber">
+              <BlockTxList alchemy={alchemy} />
+            </Route>
+          </Switch>
+        </div>
+      </div>
+    </Router>
+  );
 }
 
 export default App;
